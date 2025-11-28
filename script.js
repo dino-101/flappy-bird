@@ -2,19 +2,52 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreValue = document.getElementById('scoreValue');
 const finalScore = document.getElementById('finalScore');
+const currentLevelDisplay = document.getElementById('currentLevel');
+const finalLevelDisplay = document.getElementById('finalLevel');
 const startScreen = document.getElementById('startScreen');
 const gameOverScreen = document.getElementById('gameOverScreen');
 const restartBtn = document.getElementById('restartBtn');
+const changeLevelBtn = document.getElementById('changeLevelBtn');
+const levelButtons = document.querySelectorAll('.level-btn');
+
+// Difficulty settings
+const difficulties = {
+    easy: {
+        name: 'Easy',
+        pipeGap: 220,
+        pipeSpeed: 1.5,
+        pipeInterval: 110,
+        gravity: 0.4,
+        jumpStrength: -8
+    },
+    medium: {
+        name: 'Medium',
+        pipeGap: 190,
+        pipeSpeed: 2,
+        pipeInterval: 95,
+        gravity: 0.45,
+        jumpStrength: -8.5
+    },
+    hard: {
+        name: 'Hard',
+        pipeGap: 160,
+        pipeSpeed: 2.5,
+        pipeInterval: 85,
+        gravity: 0.5,
+        jumpStrength: -9
+    }
+};
 
 // Game variables
+let currentDifficulty = 'easy';
 let bird = {
     x: 80,
     y: 250,
     width: 34,
     height: 24,
     velocity: 0,
-    gravity: 0.5,
-    jumpStrength: -9
+    gravity: 0.4,
+    jumpStrength: -8
 };
 
 let pipes = [];
@@ -24,13 +57,18 @@ let gameOver = false;
 let frameCount = 0;
 
 const PIPE_WIDTH = 60;
-const PIPE_GAP = 180;
-const PIPE_SPEED = 2;
-const PIPE_INTERVAL = 90; // frames between pipes
 
 // Event listeners
 canvas.addEventListener('click', jump);
 restartBtn.addEventListener('click', restart);
+changeLevelBtn.addEventListener('click', changeLevel);
+
+levelButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const level = e.target.dataset.level;
+        selectLevel(level);
+    });
+});
 
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'ArrowUp') {
@@ -38,6 +76,23 @@ document.addEventListener('keydown', (e) => {
         jump();
     }
 });
+
+function selectLevel(level) {
+    currentDifficulty = level;
+    
+    // Update UI
+    levelButtons.forEach(btn => btn.classList.remove('selected'));
+    document.querySelector(`[data-level="${level}"]`).classList.add('selected');
+    
+    // Update bird properties based on difficulty
+    const diff = difficulties[level];
+    bird.gravity = diff.gravity;
+    bird.jumpStrength = diff.jumpStrength;
+    
+    // Update display
+    currentLevelDisplay.textContent = diff.name;
+    finalLevelDisplay.textContent = diff.name;
+}
 
 function jump() {
     if (!gameStarted) {
@@ -57,6 +112,25 @@ function startGame() {
 }
 
 function restart() {
+    bird.y = 250;
+    bird.velocity = 0;
+    pipes = [];
+    score = 0;
+    frameCount = 0;
+    gameOver = false;
+    gameStarted = false;
+    gameOverScreen.classList.add('hidden');
+    scoreValue.textContent = '0';
+    
+    // Apply current difficulty settings
+    const diff = difficulties[currentDifficulty];
+    bird.gravity = diff.gravity;
+    bird.jumpStrength = diff.jumpStrength;
+    
+    startGame();
+}
+
+function changeLevel() {
     bird.y = 250;
     bird.velocity = 0;
     pipes = [];
@@ -112,14 +186,15 @@ function drawBird() {
 }
 
 function createPipe() {
+    const diff = difficulties[currentDifficulty];
     const minHeight = 50;
-    const maxHeight = canvas.height - PIPE_GAP - minHeight - 100;
+    const maxHeight = canvas.height - diff.pipeGap - minHeight - 100;
     const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
     
     pipes.push({
         x: canvas.width,
         topHeight: topHeight,
-        bottomY: topHeight + PIPE_GAP,
+        bottomY: topHeight + diff.pipeGap,
         scored: false
     });
 }
@@ -151,14 +226,16 @@ function drawPipes() {
 }
 
 function updatePipes() {
+    const diff = difficulties[currentDifficulty];
+    
     // Create new pipes
-    if (frameCount % PIPE_INTERVAL === 0) {
+    if (frameCount % diff.pipeInterval === 0) {
         createPipe();
     }
     
     // Update pipe positions
     pipes.forEach((pipe, index) => {
-        pipe.x -= PIPE_SPEED;
+        pipe.x -= diff.pipeSpeed;
         
         // Remove off-screen pipes
         if (pipe.x + PIPE_WIDTH < 0) {
@@ -226,3 +303,6 @@ function gameLoop() {
     frameCount++;
     requestAnimationFrame(gameLoop);
 }
+
+// Initialize with easy level selected
+selectLevel('easy');

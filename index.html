@@ -8,22 +8,35 @@
 </head>
 <body>
     <div class="container">
-        <div class="score">Score: <span id="scoreValue">0</span></div>
+        <div class="header">
+            <div class="score">Score: <span id="scoreValue">0</span></div>
+            <div class="level-display">Level: <span id="currentLevel">Easy</span></div>
+        </div>
         
         <canvas id="gameCanvas" width="400" height="600"></canvas>
         
         <div id="startScreen" class="overlay">
             <div class="message">
                 <h1>Flappy Bird</h1>
-                <p>Press SPACE, ↑ or Click to Start!</p>
+                <p>Select Difficulty Level:</p>
+                <div class="level-buttons">
+                    <button class="level-btn easy-btn" data-level="easy">Easy</button>
+                    <button class="level-btn medium-btn" data-level="medium">Medium</button>
+                    <button class="level-btn hard-btn" data-level="hard">Hard</button>
+                </div>
+                <p class="controls-text">Press SPACE, ↑ or Click to Play!</p>
             </div>
         </div>
         
         <div id="gameOverScreen" class="overlay hidden">
             <div class="message">
                 <h1>Game Over!</h1>
+                <p>Difficulty: <span id="finalLevel">Easy</span></p>
                 <p>Final Score: <span id="finalScore">0</span></p>
-                <button id="restartBtn">Play Again</button>
+                <div class="button-group">
+                    <button id="restartBtn" class="action-btn">Play Again</button>
+                    <button id="changeLevelBtn" class="action-btn secondary">Change Level</button>
+                </div>
             </div>
         </div>
         

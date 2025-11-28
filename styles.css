@@ -21,11 +21,23 @@ body {
     gap: 20px;
 }
 
-.score {
-    font-size: 36px;
+.header {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.score, .level-display {
+    font-size: 32px;
     font-weight: bold;
     color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.level-display {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 10px;
 }
 
 #gameCanvas {
@@ -59,6 +71,7 @@ body {
     border-radius: 20px;
     text-align: center;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    min-width: 400px;
 }
 
 .message h1 {
@@ -73,9 +86,74 @@ body {
     margin-bottom: 20px;
 }
 
-#restartBtn {
+.controls-text {
+    font-size: 16px !important;
+    color: #666 !important;
+    margin-top: 20px !important;
+}
+
+.level-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.level-btn {
     font-size: 20px;
-    padding: 15px 40px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    color: white;
+}
+
+.level-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.level-btn.selected {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.easy-btn {
+    background: #4CAF50;
+}
+
+.easy-btn:hover {
+    background: #45a049;
+}
+
+.medium-btn {
+    background: #FF9800;
+}
+
+.medium-btn:hover {
+    background: #E68900;
+}
+
+.hard-btn {
+    background: #F44336;
+}
+
+.hard-btn:hover {
+    background: #D32F2F;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.action-btn {
+    font-size: 18px;
+    padding: 15px 30px;
     background: #4CAF50;
     color: white;
     border: none;
@@ -85,8 +163,16 @@ body {
     transition: background 0.3s;
 }
 
-#restartBtn:hover {
+.action-btn:hover {
     background: #45a049;
+}
+
+.action-btn.secondary {
+    background: #2196F3;
+}
+
+.action-btn.secondary:hover {
+    background: #0b7dda;
 }
 
 .controls {
