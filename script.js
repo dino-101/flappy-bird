@@ -340,6 +340,7 @@ function updatePipes() {
             bird.x < pipe.x + PIPE_WIDTH &&
             (bird.y < pipe.topHeight || bird.y + bird.height > pipe.bottomY)
         ) {
+            // ankit
             endGame();
             return;
         }
