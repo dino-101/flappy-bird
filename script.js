@@ -117,7 +117,7 @@ function startGame() {
     gameStarted = true;
     startScreen.classList.add('hidden');
     // Create first pipe closer to the bird for quicker gameplay
-    createPipeAt(400); // Position first pipe at x=400 instead of canvas.width (800)
+    createPipeAt(400);
     gameLoop();
 }
 
@@ -215,7 +215,7 @@ function createPipe() {
     const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
     
     pipes.push({
-        x: canvas.width,
+        x: 400,
         topHeight: topHeight,
         bottomY: topHeight + diff.pipeGap,
         scored: false
