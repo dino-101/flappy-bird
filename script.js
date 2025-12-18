@@ -108,6 +108,8 @@ function jump() {
 function startGame() {
     gameStarted = true;
     startScreen.classList.add('hidden');
+    // Create first pipe immediately for earlier gameplay
+    createPipe();
     gameLoop();
 }
 
@@ -276,13 +278,86 @@ function endGame() {
     gameOverScreen.classList.remove('hidden');
 }
 
-function drawGround() {
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+function drawClouds() {
+    // Draw clouds in background
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
     
-    // Draw grass on top
-    ctx.fillStyle = '#228B22';
-    ctx.fillRect(0, canvas.height - 100, canvas.width, 10);
+    // Cloud 1
+    ctx.beginPath();
+    ctx.arc(100, 80, 25, 0, Math.PI * 2);
+    ctx.arc(130, 80, 30, 0, Math.PI * 2);
+    ctx.arc(160, 80, 25, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Cloud 2
+    ctx.beginPath();
+    ctx.arc(400, 120, 20, 0, Math.PI * 2);
+    ctx.arc(425, 120, 25, 0, Math.PI * 2);
+    ctx.arc(450, 120, 20, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Cloud 3
+    ctx.beginPath();
+    ctx.arc(650, 60, 22, 0, Math.PI * 2);
+    ctx.arc(680, 60, 28, 0, Math.PI * 2);
+    ctx.arc(710, 60, 22, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawGround() {
+    const groundHeight = 100;
+    const buildingY = canvas.height - groundHeight;
+    
+    // Draw city skyline (buildings)
+    const buildings = [
+        { x: 0, width: 60, height: 60, color: '#34495e' },
+        { x: 60, width: 50, height: 80, color: '#2c3e50' },
+        { x: 110, width: 45, height: 50, color: '#95a5a6' },
+        { x: 155, width: 70, height: 90, color: '#34495e' },
+        { x: 225, width: 55, height: 70, color: '#7f8c8d' },
+        { x: 280, width: 50, height: 55, color: '#2c3e50' },
+        { x: 330, width: 65, height: 85, color: '#34495e' },
+        { x: 395, width: 45, height: 65, color: '#95a5a6' },
+        { x: 440, width: 60, height: 75, color: '#2c3e50' },
+        { x: 500, width: 70, height: 95, color: '#34495e' },
+        { x: 570, width: 50, height: 60, color: '#7f8c8d' },
+        { x: 620, width: 55, height: 80, color: '#2c3e50' },
+        { x: 675, width: 65, height: 70, color: '#34495e' },
+        { x: 740, width: 60, height: 90, color: '#95a5a6' }
+    ];
+    
+    buildings.forEach(building => {
+        // Draw building
+        ctx.fillStyle = building.color;
+        ctx.fillRect(building.x, buildingY + (groundHeight - building.height), building.width, building.height);
+        
+        // Draw windows
+        ctx.fillStyle = '#f39c12';
+        const windowRows = Math.floor(building.height / 15);
+        const windowCols = Math.floor(building.width / 12);
+        
+        for (let row = 0; row < windowRows; row++) {
+            for (let col = 0; col < windowCols; col++) {
+                const windowX = building.x + 5 + col * 12;
+                const windowY = buildingY + (groundHeight - building.height) + 5 + row * 15;
+                ctx.fillRect(windowX, windowY, 6, 8);
+            }
+        }
+    });
+    
+    // Draw ground/street
+    ctx.fillStyle = '#34495e';
+    ctx.fillRect(0, canvas.height - 15, canvas.width, 15);
+    
+    // Draw street lines
+    ctx.strokeStyle = '#f39c12';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height - 7);
+    ctx.lineTo(canvas.width, canvas.height - 7);
+    ctx.stroke();
+    ctx.setLineDash([]);
 }
 
 function gameLoop() {
@@ -291,7 +366,10 @@ function gameLoop() {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Draw ground
+    // Draw clouds first (background)
+    drawClouds();
+    
+    // Draw ground/buildings
     drawGround();
     
     // Update and draw
