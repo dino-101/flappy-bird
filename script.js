@@ -88,16 +88,21 @@ document.addEventListener('keydown', (e) => {
 // Add: initialize pipes ahead of gameplay and helper to compute spacing
 function getPipeSpacing() {
 	// spacing in pixels = frames between pipes * pipe speed (pixels per frame)
+	// Lower the enforced minimum so spacing follows difficulty more closely and pipes arrive sooner.
 	const diff = difficulties[currentDifficulty];
-	return Math.max(180, Math.floor(diff.pipeInterval * diff.pipeSpeed));
+	return Math.max(120, Math.floor(diff.pipeInterval * diff.pipeSpeed));
 }
 
 function initializePipes() {
 	const diff = difficulties[currentDifficulty];
 	const spacing = getPipeSpacing();
 	pipes = [];
-	// Start pipes off-screen to the right so preview looks natural
-	const startX = canvas.width + 80;
+	// Start pipes closer so they appear earlier after the game starts.
+	// Ensure first pipe is at least a safe distance from the bird to avoid immediate collision.
+	const safeDistanceFromBird = bird.x + bird.width + 120;
+	const preferredStart = canvas.width - 200; // near-right on screen
+	const startX = Math.max(safeDistanceFromBird, Math.min(preferredStart, canvas.width + 80));
+
 	// number of pipes to cover the screen + extra for smooth recycling
 	const count = Math.ceil((canvas.width + 400) / spacing) + 2;
 	const minHeight = 50;
