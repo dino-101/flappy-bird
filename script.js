@@ -42,7 +42,7 @@ const difficulties = {
 let currentDifficulty = 'easy';
 let bird = {
     x: 80,
-    y: 250,
+    y: 200,
     width: 34,
     height: 24,
     velocity: 0,
@@ -112,7 +112,7 @@ function startGame() {
 }
 
 function restart() {
-    bird.y = 250;
+    bird.y = 200;
     bird.velocity = 0;
     pipes = [];
     score = 0;
@@ -131,7 +131,7 @@ function restart() {
 }
 
 function changeLevel() {
-    bird.y = 250;
+    bird.y = 200;
     bird.velocity = 0;
     pipes = [];
     score = 0;
