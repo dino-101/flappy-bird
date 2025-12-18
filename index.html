@@ -29,7 +29,8 @@
         </div>
         
         <div id="gameOverScreen" class="overlay hidden">
-            <div class="message">
+            <div class="message game-over-message">
+                <button id="closeBtn" class="close-btn">✕</button>
                 <h1>Game Over!</h1>
                 <p>Difficulty: <span id="finalLevel">Easy</span></p>
                 <p>Final Score: <span id="finalScore">0</span></p>
@@ -37,6 +38,9 @@
                     <button id="restartBtn" class="action-btn">Play Again</button>
                     <button id="changeLevelBtn" class="action-btn secondary">Change Level</button>
                 </div>
+            </div>
+            <div class="transparent-hint">
+                <p>Press SPACE or ↑ to Play Again</p>
             </div>
         </div>
         

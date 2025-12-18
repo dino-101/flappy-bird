@@ -8,6 +8,7 @@ const startScreen = document.getElementById('startScreen');
 const gameOverScreen = document.getElementById('gameOverScreen');
 const restartBtn = document.getElementById('restartBtn');
 const changeLevelBtn = document.getElementById('changeLevelBtn');
+const closeBtn = document.getElementById('closeBtn');
 const levelButtons = document.querySelectorAll('.level-btn');
 
 // Difficulty settings
@@ -62,6 +63,7 @@ const PIPE_WIDTH = 60;
 canvas.addEventListener('click', jump);
 restartBtn.addEventListener('click', restart);
 changeLevelBtn.addEventListener('click', changeLevel);
+closeBtn.addEventListener('click', closeGameOver);
 
 levelButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -73,7 +75,13 @@ levelButtons.forEach(btn => {
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'ArrowUp') {
         e.preventDefault();
-        jump();
+        
+        // If game over screen is visible, restart the game
+        if (gameOver && !gameOverScreen.classList.contains('hidden')) {
+            restart();
+        } else {
+            jump();
+        }
     }
 });
 
@@ -108,8 +116,8 @@ function jump() {
 function startGame() {
     gameStarted = true;
     startScreen.classList.add('hidden');
-    // Create first pipe immediately for earlier gameplay
-    createPipe();
+    // Create first pipe closer to the bird for quicker gameplay
+    createPipeAt(400); // Position first pipe at x=400 instead of canvas.width (800)
     gameLoop();
 }
 
@@ -142,6 +150,19 @@ function changeLevel() {
     gameStarted = false;
     gameOverScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
+    scoreValue.textContent = '0';
+}
+
+function closeGameOver() {
+    gameOverScreen.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+    bird.y = 200;
+    bird.velocity = 0;
+    pipes = [];
+    score = 0;
+    frameCount = 0;
+    gameOver = false;
+    gameStarted = false;
     scoreValue.textContent = '0';
 }
 
@@ -195,6 +216,20 @@ function createPipe() {
     
     pipes.push({
         x: canvas.width,
+        topHeight: topHeight,
+        bottomY: topHeight + diff.pipeGap,
+        scored: false
+    });
+}
+
+function createPipeAt(xPosition) {
+    const diff = difficulties[currentDifficulty];
+    const minHeight = 50;
+    const maxHeight = canvas.height - diff.pipeGap - minHeight - 100;
+    const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+    
+    pipes.push({
+        x: xPosition,
         topHeight: topHeight,
         bottomY: topHeight + diff.pipeGap,
         scored: false

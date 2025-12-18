@@ -47,6 +47,7 @@ body {
     background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 100%);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     cursor: pointer;
+    display: block;
 }
 
 .overlay {
@@ -60,6 +61,8 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 10;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .overlay.hidden {
@@ -73,6 +76,52 @@ body {
     text-align: center;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     min-width: 400px;
+    position: relative;
+}
+
+.game-over-message {
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    line-height: 1;
+    padding: 0;
+}
+
+.close-btn:hover {
+    background: #c0392b;
+    transform: rotate(90deg);
+}
+
+.transparent-hint {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 20px 40px;
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.transparent-hint p {
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    margin: 0;
 }
 
 .message h1 {
