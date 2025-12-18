@@ -101,11 +101,10 @@ function selectLevel(level) {
     currentLevelDisplay.textContent = diff.name;
     finalLevelDisplay.textContent = diff.name;
     
-    // Create all pipes at the start - no runtime generation
+    // Create initial pipes for preview (more will be generated during gameplay)
     pipes = [];
     createPipeAt(400);
     createPipeAt(600);
-    createPipeAt(800);
     
     // Draw preview
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -148,10 +147,9 @@ function restart() {
     bird.gravity = diff.gravity;
     bird.jumpStrength = diff.jumpStrength;
     
-    // Recreate all pipes
+    // Create initial pipes (more will be generated during gameplay)
     createPipeAt(400);
     createPipeAt(600);
-    createPipeAt(800);
     
     startGame();
 }
@@ -168,10 +166,9 @@ function changeLevel() {
     startScreen.classList.remove('hidden');
     scoreValue.textContent = '0';
     
-    // Recreate initial pipes and show preview
+    // Create initial pipes for preview
     createPipeAt(400);
     createPipeAt(600);
-    createPipeAt(800);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawClouds();
     drawGround();
@@ -191,10 +188,9 @@ function closeGameOver() {
     gameStarted = false;
     scoreValue.textContent = '0';
     
-    // Recreate initial pipes and show preview
+    // Create initial pipes for preview
     createPipeAt(400);
     createPipeAt(600);
-    createPipeAt(800);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawClouds();
     drawGround();
@@ -301,7 +297,10 @@ function drawPipes() {
 function updatePipes() {
     const diff = difficulties[currentDifficulty];
     
-    // No runtime generation - all pipes created at start
+    // Create new pipes at intervals during gameplay
+    if (frameCount % diff.pipeInterval === 0) {
+        createPipe();
+    }
     
     // Update pipe positions
     pipes.forEach((pipe, index) => {
