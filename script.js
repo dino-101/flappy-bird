@@ -60,7 +60,10 @@ let frameCount = 0;
 const PIPE_WIDTH = 60;
 
 // Event listeners
-canvas.addEventListener('click', jump);
+// replace click-only handling with pointer/touch-friendly handlers
+// canvas.addEventListener('click', jump);  <-- removed
+
+// keep existing button handlers
 restartBtn.addEventListener('click', restart);
 changeLevelBtn.addEventListener('click', changeLevel);
 closeBtn.addEventListener('click', closeGameOver);
@@ -84,6 +87,29 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// New: unified pointer/touch handler so tapping works on mobile
+function handlePointerStart(e) {
+    // ignore taps on interactive elements (buttons/links) to avoid double handling
+    if (e.target && e.target.closest && e.target.closest('button, a, .level-btn, .action-btn, .close-btn')) {
+        return;
+    }
+
+    // If game over overlay visible, tapping restarts (same as keyboard handler)
+    if (gameOver && !gameOverScreen.classList.contains('hidden')) {
+        e.preventDefault && e.preventDefault();
+        restart();
+        return;
+    }
+
+    // Prevent page scrolling on touch when interacting with the game area
+    e.preventDefault && e.preventDefault();
+    jump();
+}
+
+// Pointer events preferred; touchstart fallback for older browsers
+document.addEventListener('pointerdown', handlePointerStart, { passive: false });
+document.addEventListener('touchstart', handlePointerStart, { passive: false });
 
 // Add: initialize pipes ahead of gameplay and helper to compute spacing
 function getPipeSpacing() {
