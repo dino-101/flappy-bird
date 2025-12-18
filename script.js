@@ -100,6 +100,18 @@ function selectLevel(level) {
     // Update display
     currentLevelDisplay.textContent = diff.name;
     finalLevelDisplay.textContent = diff.name;
+    
+    // Create initial pipes so they're visible before game starts
+    pipes = [];
+    createPipeAt(400);
+    createPipeAt(600);
+    
+    // Draw preview
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawClouds();
+    drawGround();
+    drawBird();
+    drawPipes();
 }
 
 function jump() {
@@ -116,8 +128,6 @@ function jump() {
 function startGame() {
     gameStarted = true;
     startScreen.classList.add('hidden');
-    // Create first pipe closer to the bird for quicker gameplay
-    createPipeAt(400);
     gameLoop();
 }
 
@@ -151,6 +161,15 @@ function changeLevel() {
     gameOverScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');
     scoreValue.textContent = '0';
+    
+    // Recreate initial pipes and show preview
+    createPipeAt(400);
+    createPipeAt(600);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawClouds();
+    drawGround();
+    drawBird();
+    drawPipes();
 }
 
 function closeGameOver() {
@@ -164,6 +183,15 @@ function closeGameOver() {
     gameOver = false;
     gameStarted = false;
     scoreValue.textContent = '0';
+    
+    // Recreate initial pipes and show preview
+    createPipeAt(400);
+    createPipeAt(600);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawClouds();
+    drawGround();
+    drawBird();
+    drawPipes();
 }
 
 function drawBird() {
