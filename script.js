@@ -85,6 +85,35 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// Add: initialize pipes ahead of gameplay and helper to compute spacing
+function getPipeSpacing() {
+	// spacing in pixels = frames between pipes * pipe speed (pixels per frame)
+	const diff = difficulties[currentDifficulty];
+	return Math.max(180, Math.floor(diff.pipeInterval * diff.pipeSpeed));
+}
+
+function initializePipes() {
+	const diff = difficulties[currentDifficulty];
+	const spacing = getPipeSpacing();
+	pipes = [];
+	// Start pipes off-screen to the right so preview looks natural
+	const startX = canvas.width + 80;
+	// number of pipes to cover the screen + extra for smooth recycling
+	const count = Math.ceil((canvas.width + 400) / spacing) + 2;
+	const minHeight = 50;
+	const maxHeight = canvas.height - diff.pipeGap - minHeight - 100;
+
+	for (let i = 0; i < count; i++) {
+		const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+		pipes.push({
+			x: startX + i * spacing,
+			topHeight: topHeight,
+			bottomY: topHeight + diff.pipeGap,
+			scored: false
+		});
+	}
+}
+
 function selectLevel(level) {
     currentDifficulty = level;
     
@@ -101,10 +130,8 @@ function selectLevel(level) {
     currentLevelDisplay.textContent = diff.name;
     finalLevelDisplay.textContent = diff.name;
     
-    // Create initial pipes for preview (more will be generated during gameplay)
-    pipes = [];
-    createPipeAt(400);
-    createPipeAt(600);
+    // Initialize pipes for preview (pre-generated and spaced correctly)
+    initializePipes();
     
     // Draw preview
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -147,9 +174,8 @@ function restart() {
     bird.gravity = diff.gravity;
     bird.jumpStrength = diff.jumpStrength;
     
-    // Create initial pipes (more will be generated during gameplay)
-    createPipeAt(400);
-    createPipeAt(600);
+    // Initialize prefilled pipes and start
+    initializePipes();
     
     startGame();
 }
@@ -166,9 +192,8 @@ function changeLevel() {
     startScreen.classList.remove('hidden');
     scoreValue.textContent = '0';
     
-    // Create initial pipes for preview
-    createPipeAt(400);
-    createPipeAt(600);
+    // Initialize pipes for preview
+    initializePipes();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawClouds();
     drawGround();
@@ -188,9 +213,8 @@ function closeGameOver() {
     gameStarted = false;
     scoreValue.textContent = '0';
     
-    // Create initial pipes for preview
-    createPipeAt(400);
-    createPipeAt(600);
+    // Initialize pipes for preview
+    initializePipes();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawClouds();
     drawGround();
@@ -296,20 +320,12 @@ function drawPipes() {
 
 function updatePipes() {
     const diff = difficulties[currentDifficulty];
+    const spacing = getPipeSpacing();
     
-    // Create new pipes at intervals during gameplay
-    if (frameCount % diff.pipeInterval === 0) {
-        createPipe();
-    }
-    
-    // Update pipe positions
-    pipes.forEach((pipe, index) => {
+    // Update pipe positions and recycle instead of creating new pipes during gameplay
+    for (let i = 0; i < pipes.length; i++) {
+        const pipe = pipes[i];
         pipe.x -= diff.pipeSpeed;
-        
-        // Remove off-screen pipes
-        if (pipe.x + PIPE_WIDTH < 0) {
-            pipes.splice(index, 1);
-        }
         
         // Check for scoring
         if (!pipe.scored && pipe.x + PIPE_WIDTH < bird.x) {
@@ -325,8 +341,28 @@ function updatePipes() {
             (bird.y < pipe.topHeight || bird.y + bird.height > pipe.bottomY)
         ) {
             endGame();
+            return;
         }
-    });
+    }
+    
+    // Recycle any off-screen pipes by moving them to the far right (after the current farthest pipe)
+    for (let i = 0; i < pipes.length; i++) {
+        const pipe = pipes[i];
+        if (pipe.x + PIPE_WIDTH < 0) {
+            // find farthest pipe x
+            const farthestX = pipes.reduce((max, p) => Math.max(max, p.x), -Infinity);
+            const newX = farthestX + spacing;
+            const diff = difficulties[currentDifficulty];
+            const minHeight = 50;
+            const maxHeight = canvas.height - diff.pipeGap - minHeight - 100;
+            const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+            
+            pipe.x = newX;
+            pipe.topHeight = topHeight;
+            pipe.bottomY = topHeight + diff.pipeGap;
+            pipe.scored = false;
+        }
+    }
 }
 
 function updateBird() {
